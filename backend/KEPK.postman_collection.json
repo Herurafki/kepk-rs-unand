@@ -1,0 +1,779 @@
+{
+  "info": {
+    "name": "KEPK API",
+    "description": "KEPK Research Data Access Permission System — complete API collection",
+    "_postman_id": "kepk-api-collection-v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:5000/api", "type": "string" },
+    { "key": "researcher_token", "value": "", "type": "string" },
+    { "key": "diklat_token", "value": "", "type": "string" },
+    { "key": "sekretaris_token", "value": "", "type": "string" },
+    { "key": "chief_token", "value": "", "type": "string" },
+    { "key": "reviewer_token", "value": "", "type": "string" },
+    { "key": "application_id", "value": "", "type": "string" },
+    { "key": "document_id", "value": "", "type": "string" },
+    { "key": "assignment_id", "value": "", "type": "string" },
+    { "key": "review_id", "value": "", "type": "string" },
+    { "key": "permit_id", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Researcher\",\n  \"email\": \"researcher@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));"] }
+          }]
+        },
+        {
+          "name": "Login (Researcher)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"researcher@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "  const data = pm.response.json().data;",
+                "  pm.collectionVariables.set('researcher_token', data.access_token);",
+                "  pm.collectionVariables.set('researcher_refresh_token', data.refresh_token);",
+                "}"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Login (Diklat)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"diklat@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "  pm.collectionVariables.set('diklat_token', pm.response.json().data.access_token);",
+                "}"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Login (Chief KEPK)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"chief@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "  pm.collectionVariables.set('chief_token', pm.response.json().data.access_token);",
+                "}"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Login (Reviewer)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"reviewer@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "  pm.collectionVariables.set('reviewer_token', pm.response.json().data.access_token);",
+                "}"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Get Profile (me)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/auth/me",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/refresh",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{researcher_refresh_token}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/logout",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{researcher_refresh_token}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Create Draft Application",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/applications",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"group_category\": \"MAHASISWA\",\n  \"research_title\": \"Analisis Data Kesehatan Masyarakat\",\n  \"research_background\": \"Latar belakang penelitian...\",\n  \"research_objectives\": \"Tujuan penelitian...\",\n  \"research_methodology\": \"Metodologi penelitian...\",\n  \"research_location\": \"Rumah Sakit X\",\n  \"research_institution\": \"Universitas Y\",\n  \"research_duration\": \"3 bulan\",\n  \"data_needed\": \"Data rekam medis\",\n  \"purpose\": \"Keperluan skripsi\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "  pm.collectionVariables.set('application_id', pm.response.json().data.id);",
+                "}"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "List Applications",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/applications",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Get Application by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/applications/{{application_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Update Draft Application",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/applications/{{application_id}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"research_title\": \"Updated Research Title\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Submit Application",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/applications/{{application_id}}/submit",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Revise Application (resubmit after revision)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/applications/{{application_id}}/revise",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"research_background\": \"Updated background after revision\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Application History",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/applications/{{application_id}}/history",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Get Application Revisions",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/applications/{{application_id}}/revisions",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Delete Draft Application",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/applications/{{application_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/applications/{{application_id}}/documents",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "" },
+                { "key": "document_type", "value": "PROPOSAL", "type": "text" }
+              ]
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "  pm.collectionVariables.set('document_id', pm.response.json().data.id);",
+                "}"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "List Documents",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/applications/{{application_id}}/documents",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Get Document by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/documents/{{document_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Download Document",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/documents/{{document_id}}/download",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/documents/{{document_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Diklat Verification",
+      "item": [
+        {
+          "name": "List All Applications (Diklat Queue)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/admin/applications",
+            "header": [{ "key": "Authorization", "value": "Bearer {{diklat_token}}" }]
+          }
+        },
+        {
+          "name": "Get Application Detail",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/admin/applications/{{application_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{diklat_token}}" }]
+          }
+        },
+        {
+          "name": "Open Application (SUBMITTED → ADMIN_REVIEW)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/applications/{{application_id}}/open",
+            "header": [{ "key": "Authorization", "value": "Bearer {{diklat_token}}" }]
+          }
+        },
+        {
+          "name": "Request Revision",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/applications/{{application_id}}/revision",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{diklat_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Dokumen proposal belum lengkap. Mohon lampirkan CV peneliti.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Approve Without Ethics Review",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/applications/{{application_id}}/approve-without-ethics",
+            "header": [{ "key": "Authorization", "value": "Bearer {{diklat_token}}" }]
+          }
+        },
+        {
+          "name": "Approve With Ethics Review",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/applications/{{application_id}}/approve-with-ethics",
+            "header": [{ "key": "Authorization", "value": "Bearer {{diklat_token}}" }]
+          }
+        },
+        {
+          "name": "Reject Application",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/applications/{{application_id}}/reject",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{diklat_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Pengajuan tidak memenuhi syarat administratif.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Issue Letter (Permit)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/applications/{{application_id}}/letter",
+            "header": [{ "key": "Authorization", "value": "Bearer {{diklat_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "" },
+                { "key": "letter_type", "value": "IZIN_PENELITIAN", "type": "text" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sekretaris KEPK",
+      "item": [
+        {
+          "name": "List Applications (Sekretaris Queue)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/sekretaris/applications",
+            "header": [{ "key": "Authorization", "value": "Bearer {{sekretaris_token}}" }]
+          }
+        },
+        {
+          "name": "Forward to Ethics Review",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/sekretaris/applications/{{application_id}}/forward",
+            "header": [{ "key": "Authorization", "value": "Bearer {{sekretaris_token}}" }]
+          }
+        },
+        {
+          "name": "Request Revision (Sekretaris)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/sekretaris/applications/{{application_id}}/revision",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{sekretaris_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Perlu perbaikan pada metodologi penelitian.\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviewer Assignment",
+      "item": [
+        {
+          "name": "List Available Reviewers",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/review-assignments/reviewers",
+            "header": [{ "key": "Authorization", "value": "Bearer {{chief_token}}" }]
+          }
+        },
+        {
+          "name": "List Assignments",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/review-assignments",
+            "header": [{ "key": "Authorization", "value": "Bearer {{chief_token}}" }]
+          }
+        },
+        {
+          "name": "Assign Reviewer",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/applications/{{application_id}}/assign-reviewer",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{chief_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reviewer_id\": \"<reviewer-uuid>\",\n  \"review_type\": \"EXPEDITED\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "  pm.collectionVariables.set('assignment_id', pm.response.json().data.id);",
+                "}"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Accept Assignment",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/review-assignments/{{assignment_id}}/accept",
+            "header": [{ "key": "Authorization", "value": "Bearer {{reviewer_token}}" }]
+          }
+        },
+        {
+          "name": "Reject Assignment",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/review-assignments/{{assignment_id}}/reject",
+            "header": [{ "key": "Authorization", "value": "Bearer {{reviewer_token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Review",
+      "item": [
+        {
+          "name": "List Reviews",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/reviews",
+            "header": [{ "key": "Authorization", "value": "Bearer {{reviewer_token}}" }]
+          }
+        },
+        {
+          "name": "Submit Review",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/applications/{{application_id}}/reviews",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recommendation\": \"APPROVE\",\n  \"comment\": \"Penelitian layak dilakukan. Metodologi sudah memadai.\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "  pm.collectionVariables.set('review_id', pm.response.json().data.id);",
+                "}"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Get Review by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/reviews/{{review_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{reviewer_token}}" }]
+          }
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/reviews/{{review_id}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recommendation\": \"REVISION\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Review Comments",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/reviews/{{review_id}}/comments",
+            "header": [{ "key": "Authorization", "value": "Bearer {{reviewer_token}}" }]
+          }
+        },
+        {
+          "name": "Add Review Comment",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/reviews/{{review_id}}/comments",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comment\": \"Perlu perbaikan pada bagian metodologi.\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Final Decision",
+      "item": [
+        {
+          "name": "Approve Application",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/applications/{{application_id}}/decision/approve",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{chief_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Pengajuan disetujui untuk pengambilan data.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Request Revision (Chief)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/applications/{{application_id}}/decision/revision",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{chief_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Perlu perbaikan pada bab metodologi.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Reject Application (Chief)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/applications/{{application_id}}/decision/reject",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{chief_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Penelitian tidak memenuhi standar etik.\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Permit (Surat Izin)",
+      "item": [
+        {
+          "name": "Get Letter Metadata",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/applications/{{application_id}}/letter",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "  pm.collectionVariables.set('permit_id', pm.response.json().data.id);",
+                "}"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Download Letter",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/letters/{{permit_id}}/download",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Application History",
+      "item": [
+        {
+          "name": "Get Application History",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/applications/{{application_id}}/history",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Get Application Revisions",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/applications/{{application_id}}/revisions",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Management (SUPERADMIN)",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/users",
+            "header": [{ "key": "Authorization", "value": "Bearer {{superadmin_token}}" }]
+          }
+        },
+        {
+          "name": "Create User (with role)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/users",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{superadmin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Diklat Staff\",\n  \"email\": \"diklat@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"DIKLIT\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Reviewer (by Sekretaris)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/users",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{sekretaris_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Reviewer\",\n  \"email\": \"reviewer@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"REVIEWER\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Researcher Profile (own)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/researchers/me",
+            "header": [{ "key": "Authorization", "value": "Bearer {{researcher_token}}" }]
+          }
+        },
+        {
+          "name": "Update Researcher Profile",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/researchers/me",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"institution\": \"Universitas Indonesia\",\n  \"faculty\": \"Fakultas Kedokteran\",\n  \"phone\": \"08123456789\",\n  \"program_study\": \"Pendidikan Dokter\",\n  \"address\": \"Jl. Salemba Raya No. 6, Jakarta\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

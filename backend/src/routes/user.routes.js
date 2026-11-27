@@ -1,0 +1,26 @@
+'use strict';
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/user.controller');
+const { authenticate } = require('../middleware/auth.middleware');
+const { authorize } = require('../middleware/role.middleware');
+
+router.use(authenticate);
+router.get('/researchers/me', authorize('PENELITI'), userController.getResearcherProfile);
+router.put('/researchers/me', authorize('PENELITI'), userController.updateResearcherProfile);
+router.get('/researchers/:id', authorize('DIKLIT', 'SEKRETARIAT', 'KETUA', 'SUPERADMIN'), userController.getResearcherProfile);
+router.get('/reviewers/me', authorize('REVIEWER'), userController.getReviewerProfile);
+router.put('/reviewers/me', authorize('REVIEWER'), userController.updateReviewerProfile);
+router.get('/reviewers', authorize('SUPERADMIN', 'SEKRETARIAT'), userController.listReviewers);
+router.put('/reviewers/:id', authorize('SEKRETARIAT'), userController.updateReviewerManagement);
+router.patch('/reviewers/:id/status', authorize('SEKRETARIAT'), userController.setReviewerActiveStatus);
+router.get('/', authorize('SUPERADMIN'), userController.list);
+router.get('/roles', authorize('SUPERADMIN', 'SEKRETARIAT'), userController.getAllRoles);
+router.get('/:id', authorize('SUPERADMIN'), userController.getById);
+router.post('/', authorize('SUPERADMIN', 'SEKRETARIAT'), userController.create);
+router.put('/:id', authorize('SUPERADMIN'), userController.update);
+router.put('/:id/password', authorize('SUPERADMIN'), userController.updatePassword);
+router.patch('/:id/status', authorize('SUPERADMIN'), userController.setActiveStatus);
+router.post('/:id/roles', authorize('SUPERADMIN'), userController.assignRole);
+router.delete('/:id/roles/:roleId', authorize('SUPERADMIN'), userController.removeRole);
+module.exports = router;

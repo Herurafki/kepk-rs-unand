@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <title>Keterangan Bebas Kaji Etik</title>
+    <style>
+        <%- css %>
+    </style>
+</head>
+
+<body>
+    <% if (hasKop) { %><img class="letterhead" src="<%= kopDataUri %>" alt="Kop surat">
+        <% } else { %>
+            <div class="letterhead-placeholder">KEMENTERIAN PENDIDIKAN TINGGI, SAINS DAN TEKNOLOGI<strong>UNIVERSITAS
+                    ANDALAS</strong>RUMAH SAKIT UNIVERSITAS ANDALAS<br><span class="small">Kop surat akan diganti
+                    menggunakan aset resmi.</span></div>
+            <% } %>
+                <h1>
+                    <%= letterType==='BEBAS_KAJI_ETIK' ? 'KETERANGAN BEBAS KAJI ETIK'
+                        : 'SURAT PERSETUJUAN ETIK PENELITIAN' %>
+                </h1>
+                <h2>
+                    <%= letterType==='BEBAS_KAJI_ETIK' ? 'ETHICAL EXEMPTION' : 'ETHICAL APPROVAL' %>
+                </h2>
+                <p style="text-align:center">Nomor: <%= letterNumber %>
+                </p>
+                <p>Komite Etik Penelitian Rumah Sakit Universitas Andalas telah menelaah pengajuan penelitian dengan
+                    rincian sebagai berikut:</p>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th style="width:38%">Judul Penelitian</th>
+                            <td>
+                                <%= researchTitle %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Peneliti Utama</th>
+                            <td>
+                                <%= researcherName %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>NIM/NIP/NIK</th>
+                            <td>
+                                <%= researcherId %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Institusi</th>
+                            <td>
+                                <%= institution %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Nomor Pengajuan</th>
+                            <td>
+                                <%= applicationNumber %>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Dokumen ini diterbitkan berdasarkan hasil penelaahan Komite Etik Penelitian. Untuk pelaksanaan
+                    penelitian, peneliti wajib mematuhi protokol dan ketentuan etik yang berlaku serta melaporkan
+                    perubahan protokol atau kejadian serius sesuai prosedur yang ditetapkan.</p>
+                <div class="signature-row">
+                    <div class="signature">Direktur Utama<br>Rumah Sakit Universitas Andalas<div
+                            class="signature-space"></div>
+                        <div>Nama dan tanda tangan</div>
+                    </div>
+                    <div class="signature">Ketua Komite Etik Penelitian<br>Rumah Sakit Universitas Andalas<div
+                            class="signature-space"></div>
+                        <div>Nama dan tanda tangan</div>
+                    </div>
+                </div>
+                <% if (hasAccreditation) { %>
+                    <div class="footer-art"><img class="accreditation" src="<%= accreditationDataUri %>"
+                            alt="Logo akreditasi"></div>
+                    <% } %>
+</body>
+
+</html>

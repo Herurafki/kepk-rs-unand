@@ -1,0 +1,31 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  await page.goto('http://localhost:5173/');
+  await page.getByRole('button', { name: 'Buka menu' }).click();
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('radio', { name: 'Dosen Untuk tenaga pengajar' }).click();
+  await page.getByRole('textbox', { name: 'Nama Lengkap' }).click();
+  await page.getByRole('textbox', { name: 'Nama Lengkap' }).fill('Dr. Hendra Wijaya, M.Kes.');
+  await page.getByRole('textbox', { name: 'Email' }).click();
+  await page.getByRole('textbox', { name: 'Email' }).fill('ponibib421@bonuscable.com');
+  await page.getByRole('textbox', { name: 'Password', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Password', exact: true }).fill('password123');
+  await page.getByRole('textbox', { name: 'Konfirmasi Password' }).click();
+  await page.getByRole('textbox', { name: 'Konfirmasi Password' }).fill('password123');
+  await page.getByRole('textbox', { name: 'NIK' }).click();
+  await page.getByRole('textbox', { name: 'NIK' }).fill('1371021809820001');
+  await page.getByRole('textbox', { name: 'NIP' }).click();
+  await page.getByRole('textbox', { name: 'NIP' }).fill('198209182008121003');
+  await page.getByRole('textbox', { name: 'No. HP' }).click();
+  await page.getByRole('textbox', { name: 'No. HP' }).fill('081363456789');
+  await page.getByRole('combobox', { name: 'Institusi' }).click();
+  await page.getByRole('combobox', { name: 'Institusi' }).fill('Universitas Andalas');
+  await page.getByRole('combobox', { name: 'Fakultas' }).click();
+  await page.getByRole('combobox', { name: 'Fakultas' }).fill('Kesehatan Masyarakat');
+  await page.getByRole('combobox', { name: 'Program Studi' }).click();
+  await page.getByRole('combobox', { name: 'Program Studi' }).fill('Ilmu Kesehatan Masyarakat');
+  await page.getByRole('textbox', { name: 'Alamat' }).click();
+  await page.getByRole('textbox', { name: 'Alamat' }).fill('Komplek Griya Indah Blok C No. 12, Lubuk Begalung, Kota Padang, Sumatera Barat');
+  await page.getByRole('button', { name: 'Registrasi' }).click();
+});

@@ -1,0 +1,18 @@
+'use strict';
+const express = require('express');
+const router = express.Router();
+const assignmentController = require('../controllers/assignment.controller');
+const chiefAssignmentController = require('../controllers/chief-assignment.controller');
+const { authenticate } = require('../middleware/auth.middleware');
+const { authorize } = require('../middleware/role.middleware');
+router.use(authenticate);
+router.get('/reviewers', authorize('KETUA', 'SUPERADMIN'), assignmentController.listAvailableReviewers);
+router.get('/application/:application_id', authorize('KETUA', 'DIKLIT', 'SEKRETARIAT', 'SUPERADMIN'), assignmentController.listByApplication);
+router.post('/chief', authorize('KETUA'), chiefAssignmentController.assign);
+router.post('/applications/:id/assign', authorize('KETUA'), assignmentController.assign);
+router.post('/', authorize('KETUA'), assignmentController.assignFromBody);
+router.get('/', authorize('REVIEWER', 'KETUA', 'SUPERADMIN'), assignmentController.list);
+router.get('/:id', authorize('REVIEWER', 'KETUA', 'SUPERADMIN'), assignmentController.getById);
+router.post('/:id/accept', authorize('REVIEWER'), assignmentController.accept);
+router.post('/:id/reject', authorize('REVIEWER'), assignmentController.reject);
+module.exports = router;

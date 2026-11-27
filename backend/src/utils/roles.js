@@ -1,0 +1,12 @@
+'use strict';
+
+const ROLES = {
+  PENELITI: 'PENELITI',
+  DIKLIT: 'DIKLIT',
+  SEKRETARIAT: 'SEKRETARIAT',
+  KETUA: 'KETUA',
+  REVIEWER: 'REVIEWER',
+  SUPERADMIN: 'SUPERADMIN',
+};
+
+module.exports = ROLES;

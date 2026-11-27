@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <title>Keterangan Lolos Kaji Etik</title>
+
+    <style>
+      /* Penyesuaian agar muat satu halaman & persis contoh */
+      body {
+        font-size: 10.5pt;
+        line-height: 1.3;
+      }
+      .letterhead {
+        max-height: 40mm;
+      }
+      .doc-title {
+        text-align: center;
+        margin: 4mm 0 4mm;
+      }
+      .doc-title div {
+        font-weight: bold;
+        text-align: center;
+        line-height: 1.3;
+      }
+      .doc-title .t-id {
+        text-decoration: underline;
+        font-size: 11pt;
+      }
+      p {
+        margin: 0 0 6px;
+      }
+      .research-title {
+        font-weight: bold;
+        text-align: center;
+        margin: 0 0 8px;
+      }
+      .field {
+        display: flex;
+        align-items: flex-start;
+        margin: 0 0 2px;
+      }
+      .field .label {
+        width: 58mm;
+        flex: none;
+      }
+      .field .label em {
+        display: block;
+      }
+      .field .sep {
+        width: 4mm;
+        flex: none;
+      }
+      .field .value {
+        flex: 1;
+      }
+      .approval {
+        margin: 6px 0 8px;
+      }
+      .approval strong {
+        display: block;
+      }
+      .approval em {
+        display: block;
+      }
+      .signature-row {
+        display: flex;
+        margin-top: 4px;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .signature {
+        flex: 1;
+        min-width: 0;
+        min-height: 0;
+        text-align: left;
+      }
+
+      .signature-space {
+        height: 72px;
+      }
+
+      .signature .name {
+        font-weight: bold;
+      }
+      .notes {
+        font-size: 9.5pt;
+        text-align: justify;
+        margin-top: 20px;
+        line-height: 1.25;
+      }
+      .footer-art {
+        justify-content: flex-start;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .footer-art .accreditation {
+        max-height: 18mm;
+        max-width: 40mm;
+      }
+      .footer-art .accreditation-text {
+        font-size: 10.5pt;
+        line-height: 1.25;
+      }
+    </style>
+  </head>
+
+  <body>
+    <% if (hasKop) { %><img
+      class="letterhead"
+      src="<%= kopDataUri %>"
+      alt="Kop surat"
+    />
+    <% } else { %>
+    <div class="letterhead-placeholder">
+      KEMENTERIAN PENDIDIKAN TINGGI, SAINS DAN TEKNOLOGI<strong
+        >UNIVERSITAS ANDALAS</strong
+      >RUMAH SAKIT UNIVERSITAS ANDALAS<br /><span class="small"
+        >Kop surat akan diganti menggunakan aset resmi.</span
+      >
+    </div>
+    <% } %>
+
+    <div class="doc-title">
+      <div class="t-id">KETERANGAN LOLOS KAJI ETIK</div>
+      <div>DESCRIPTION OF ETHICAL APPROVAL</div>
+      <div>Nomor.<%= letterNumber %></div>
+    </div>
+
+    <p>
+      Tim Komisi Etik Fakultas Kedokteran Universitas Andalas, dalam upaya
+      melindungi Hak Asasi dan Kesejahteraan Subjek Penelitian
+      kedokteran/Kesehatan, telah mengkaji dengan teliti protocol penelitian
+      dengan judul:
+      <em
+        >(The Research Ethics Committee Universitas Andalas Hospital, in order
+        to protect human rights and welfare medical/health research subject, has
+        carefully reviewed the research protocol entitled):</em
+      >
+    </p>
+
+    <p class="research-title">"<%= researchTitle %>"</p>
+
+    <div class="field">
+      <div class="label">
+        Nama Peneliti Utama<em>Principal Investigator Name</em>
+      </div>
+      <div class="sep">:</div>
+      <div class="value"><%= researcherName %></div>
+    </div>
+    <div class="field">
+      <div class="label">
+        Nomor Induk Mahasiswa<em>Student ID<br />Principal Researcher</em>
+      </div>
+      <div class="sep">:</div>
+      <div class="value"><%= researcherId %></div>
+    </div>
+    <div class="field">
+      <div class="label">Nama Institusi<em>Institution</em></div>
+      <div class="sep">:</div>
+      <div class="value"><%= institution %></div>
+    </div>
+    <div class="field">
+      <div class="label">
+        Nomor Registrasi Etik<em>Ethics Registration Number</em>
+      </div>
+      <div class="sep">:</div>
+      <div class="value"><%= applicationNumber %></div>
+    </div>
+    <div class="field">
+      <div class="label">Masa Berlaku<em>Validity Period</em></div>
+      <div class="sep">:</div>
+      <div class="value">1 Tahun Sejak Dokumen Ini di Terbitkan</div>
+    </div>
+
+    <div class="approval">
+      <strong
+        >Protokol Penelitian tersebut dapat disetujui pelaksanaannya</strong
+      >
+      <em>and approved the research protocol.</em>
+    </div>
+
+    <div class="signature-row">
+      <div class="signature">
+        <br />Direktur Utama<br />Rumah Sakit Universitas Andalas
+        <div class="signature-space"></div>
+        <div class="name">MUHAMMAD RIENDRA</div>
+        <div>NIP: 197604082005011007</div>
+      </div>
+      <div class="signature">
+        Padang, <%= new Date().toLocaleDateString('id-ID', { day: 'numeric',
+        month: 'long', year: 'numeric' }) %><br />
+        Ketua<br />Komite Etik Penelitian Rumah Sakit Universitas Andalas
+        <div class="signature-space"></div>
+        <div class="name">Prof. dr. Nur Indrawaty Liputo, MSc, PhD, Sp.GK</div>
+        <div>NIP: 196305071990012001</div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <strong>Keterangan/notes:</strong><br />
+      Keterangan lolos kaji etik ini berlaku satu tahun dari tanggal persetujuan
+      <em>This ethical approval is effective for one year from the due date</em>
+      Jika ada kejadian serius yang tidak diinginkan (KTD) harus segera
+      dilaporkan ke Komite Etik Penelitian
+      <em
+        >If there are Serious Adverse Events (SAE) should be immediately
+        reported to the Research Ethics Committee</em
+      >
+    </div>
+
+  </body>
+</html>

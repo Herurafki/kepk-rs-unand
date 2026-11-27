@@ -1,0 +1,7 @@
+BEGIN;
+
+ALTER TABLE applications
+  ADD COLUMN IF NOT EXISTS forum_date DATE,
+  ADD COLUMN IF NOT EXISTS forum_closed_at TIMESTAMPTZ;
+
+COMMIT;

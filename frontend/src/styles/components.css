@@ -1,0 +1,471 @@
+/* Shared visual patterns and existing application shells. */
+.public-layout,
+.auth-layout,
+.dashboard-layout {
+  min-height: 100vh;
+}
+
+.public-main > .landing-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-hero,
+.landing-section,
+.landing-cta {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+}
+
+.landing-eyebrow,
+.landing-section__eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--color-text-inverse-muted);
+}
+
+.landing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.18s ease, filter 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.landing-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.landing-btn--primary {
+  color: var(--primary-foreground);
+  background: var(--gradient-primary);
+}
+
+.landing-btn--secondary {
+  color: var(--color-text-inverse);
+  border-color: var(--color-text-inverse);
+  background: var(--color-surface-overlay);
+  backdrop-filter: blur(4px);
+}
+
+.landing-btn--secondary:hover {
+  background: var(--color-surface-overlay-medium);
+}
+
+.landing-section {
+  padding: 26px;
+  text-align: left;
+}
+
+.landing-section h2,
+.landing-cta h2 {
+  margin: 8px 0 10px;
+  color: var(--accent-foreground);
+  font-size: clamp(1.45rem, 3vw, 2rem);
+}
+
+.landing-section p,
+.landing-cta p {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+
+.landing-grid {
+  margin-top: 14px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.landing-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  min-height: 280px;
+  justify-content: flex-start;
+}
+
+a.landing-card:hover,
+a.landing-card:focus-visible {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+.landing-link {
+  margin-top: auto;
+  padding-top: 4px;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.landing-link:hover {
+  text-decoration: underline;
+}
+
+.landing-card__icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--secondary) 72%, white);
+  flex-shrink: 0;
+}
+
+.landing-card__icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.landing-card h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--foreground);
+  line-height: 1.3;
+}
+
+.landing-card p {
+  margin: 0 0 12px;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  flex-grow: 1;
+}
+
+.landing-cta .landing-btn {
+  justify-self: start;
+}
+
+/* ------------------------------------------------------------------ */
+/* Internal public pages (Profil / Informasi / Dokumen) - shared shell */
+/* ------------------------------------------------------------------ */
+
+.info-page {
+  display: grid;
+  gap: 20px;
+  padding: 8px 0 32px;
+}
+
+
+.auth-page {
+  position: relative;
+  min-height: 10vh;
+  padding: 28px 16px;
+
+  display: grid;
+  place-items: center;
+
+  box-sizing: border-box;
+}
+
+.auth-card {
+  width: min(100%, 520px);
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: var(--shadow-lg);
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.auth-card--sm {
+  width: min(100%, 480px);
+}
+
+.auth-kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.auth-title {
+  margin: 8px 0 8px;
+  font-size: clamp(1.65rem, 3.2vw, 2.1rem);
+  line-height: 1.2;
+  color: var(--foreground);
+}
+
+.auth-subtitle {
+  margin: 0 0 28px;
+  color: var(--muted-foreground);
+  text-align: left;
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-alert {
+  margin: 0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.92rem;
+}
+
+.auth-alert--error {
+  color: var(--destructive);
+  background: var(--color-danger-soft);
+  border: 1px solid var(--color-danger-border);
+}
+
+.auth-alert--success {
+  color: var(--accent-foreground);
+  background: var(--color-success-soft);
+  border: 1px solid var(--color-success-border);
+}
+
+.auth-button {
+  height: 48px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.98rem;
+  color: var(--primary-foreground);
+  background: var(--color-primary-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.auth-button:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-sm);
+}
+
+.auth-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+.auth-alt-link {
+  margin: 18px 0 0;
+  font-size: 0.93rem;
+  color: var(--muted-foreground);
+}
+
+.auth-alt-link a {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-alt-link a:hover {
+  text-decoration: underline;
+}
+
+/* Extended auth card for register with more fields */
+.auth-card--lg {
+  width: min(100%, 720px);
+}
+
+/* Grid layout for category-specific form fields */
+.auth-form--lg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+/* Most fields span 1 column (default for 2-column layout) */
+.auth-form--lg > .auth-field {
+  grid-column: auto;
+}
+
+/* Fields that need full-width - using child combinator for direct auth-field children */
+.auth-form--lg > .auth-field.span-full,
+.auth-form--lg > div.span-full,
+.auth-form--lg > [class*="span-full"] {
+  grid-column: 1 / -1;
+}
+
+.auth-form--lg .auth-alert {
+  grid-column: 1 / -1;
+  margin: 6px 0 0;
+}
+
+.auth-form--lg .auth-button {
+  grid-column: 1 / -1;
+  margin-top: 12px;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .auth-card {
+    padding: 24px 20px;
+  }
+
+  .auth-card--lg {
+    width: min(100%, calc(100% - 32px));
+  }
+
+  .auth-subtitle {
+    margin: 0 0 20px;
+  }
+
+  .auth-form--lg {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .auth-form--lg > .auth-field {
+    grid-column: auto;
+  }
+
+  .auth-form--lg > .auth-field.span-full,
+  .auth-form--lg > div.span-full,
+  .auth-form--lg > [class*="span-full"] {
+    grid-column: 1;
+  }
+}
+
+.page-slide-enter-active,
+.page-slide-leave-active {
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.page-slide-enter-from {
+  opacity: 0;
+  transform: translateX(14px);
+}
+
+.page-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-14px);
+}
+
+@media (max-width: 1024px) {
+  .landing-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+
+  .landing-btn {
+    height: 44px;
+    padding: 0 20px;
+    font-size: 0.9rem;
+  }
+
+  .landing-btn {
+    width: auto;
+    min-width: 180px;
+  }
+
+  .landing-hero__content,
+  .landing-section,
+  .landing-cta {
+    padding: 18px;
+  }
+
+  .landing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-card {
+    padding: 22px 18px;
+    border-radius: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-slide-enter-active,
+  .page-slide-leave-active {
+    transition: none;
+  }
+}
+
+/* Shared researcher form layout */
+.form-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.form-header {
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.form-title {
+  margin: 0 0 8px;
+  color: var(--foreground);
+  font-size: clamp(1.55rem, 2.2vw, 2rem);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.form-subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+}
+
+.form-container {
+  display: grid;
+  gap: 24px;
+  padding: 36px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 768px) {
+  .form-page {
+    padding: 0;
+  }
+
+  .form-header {
+    margin-bottom: 24px;
+  }
+
+  .form-container {
+    gap: 20px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+}
+

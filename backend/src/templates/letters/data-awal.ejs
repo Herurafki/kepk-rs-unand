@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <title>Surat Pengambilan Data Awal</title>
+    <style>
+        <%- css %>
+    </style>
+</head>
+
+<body>
+    <% if (hasKop) { %><img class="letterhead" src="<%= kopDataUri %>" alt="Kop surat">
+        <% } else { %>
+            <div class="letterhead-placeholder">KEMENTERIAN PENDIDIKAN TINGGI, SAINS DAN TEKNOLOGI<strong>UNIVERSITAS
+                    ANDALAS</strong>RUMAH SAKIT UNIVERSITAS ANDALAS<br><span class="small">Kop surat akan diganti
+                    menggunakan aset resmi.</span></div>
+            <% } %>
+                <div class="topline">
+                    <div class="meta">
+                        <p>Nomor : <%= letterNumber %></p>
+                        <p>Lampiran : -</p>
+                        <p>Hal : Permohonan Pengambilan Data Awal</p>
+                    </div>
+                    <div>Padang, <%= date %>
+                    </div>
+                </div>
+                <div class="recipient">Kepada Yth.<br><strong><%= correspondence.signatory_position || "Penerima Surat" %></strong><br><strong><%= correspondence.recipient_institution || institution %></strong><br>di Tempat</div>
+                <p>Dengan hormat,</p>
+                <p>Menjawab surat yang kami terima pada tanggal <%= formatDate(correspondence.incoming_letter_date) %> dengan nomor <%= correspondence.incoming_letter_number %> perihal <%= correspondence.incoming_letter_subject %>, maka dengan ini kami
+                    sampaikan pihak Rumah Sakit Universitas Andalas mengizinkan mahasiswa Fakultas <%= faculty %>
+                        <%= institution %> untuk melakukan pengambilan data awal di Rumah Sakit Universitas Andalas.
+                            Adapun data mahasiswa yang melakukan pengambilan data awal sebagai berikut:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:7%">No</th>
+                            <th style="width:25%">Nama Mahasiswa</th>
+                            <th style="width:18%">NIM</th>
+                            <th>Judul</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>
+                                <%= researcherName %>
+                            </td>
+                            <td>
+                                <%= researcherId %>
+                            </td>
+                            <td>
+                                <%= researchTitle %>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Setelah melakukan pengambilan data harap memberikan laporan ke Bagian Diklit Rumah Sakit Universitas
+                    Andalas. Bagi peneliti yang melakukan publikasi penelitian agar mencantumkan afiliasi
+                    <strong>Universitas Andalas Hospital</strong> pada publikasinya dan menginformasikan kepada Rumah
+                    Sakit Universitas Andalas terkait publikasi tersebut. Jika ada pembiayaan dalam kegiatan penelitian
+                    maka akan mengikuti peraturan yang ada di Rumah Sakit Universitas Andalas.</p>
+                <p>Demikian surat ini disampaikan, atas perhatian dan kerja samanya diucapkan terima kasih.</p>
+                <div class="signature-row">
+                    <div></div>
+                    <div class="signature"><strong>Direktur Utama<br>Rumah Sakit Universitas Andalas</strong>
+                        <div class="signature-space"></div>
+                        <div class="signature-name">MUHAMMAD RIENDRA</div>
+                        <div>NIP: 197604082005011007</div>
+                    </div>
+                </div>
+                <p class="small">Tembusan: <br>Arsip</p>
+                <% if (hasAccreditation) { %>
+                    <div class="footer-art"><img class="accreditation" src="<%= accreditationDataUri %>"
+                            alt="Logo akreditasi"></div>
+                    <% } %>
+</body>
+
+</html>

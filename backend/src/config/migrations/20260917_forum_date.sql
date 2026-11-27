@@ -1,0 +1,7 @@
+BEGIN;
+
+ALTER TABLE applications 
+ALTER COLUMN forum_date TYPE TIMESTAMP USING forum_date::TIMESTAMP;
+
+
+COMMIT;

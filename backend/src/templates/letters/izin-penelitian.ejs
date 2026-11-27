@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <title>Surat Izin Penelitian</title>
+    <style>
+        <%- css %>
+    </style>
+</head>
+
+<body>
+    <% if (hasKop) { %><img class="letterhead" src="<%= kopDataUri %>" alt="Kop surat">
+        <% } else { %>
+            <div class="letterhead-placeholder">KEMENTERIAN PENDIDIKAN TINGGI, SAINS DAN TEKNOLOGI<strong>UNIVERSITAS
+                    ANDALAS</strong>RUMAH SAKIT UNIVERSITAS ANDALAS<br><span class="small">Kop surat akan diganti
+                    menggunakan aset resmi.</span></div>
+            <% } %>
+                <div class="topline">
+                    <div class="meta">
+                        <p>Nomor : <%= letterNumber %>
+                        </p>
+                        <p>Lampiran : -</p>
+                        <p>Hal : Permohonan Izin Penelitian</p>
+                    </div>
+                    <div>Padang, <%= date %>
+                    </div>
+                </div>
+                <div class="recipient">Kepada Yth.<br><strong><%= correspondence.signatory_position || "Penerima Surat" %></strong><br><strong><%= correspondence.recipient_institution || institution %></strong><br>di Tempat</div>
+                <p>Dengan hormat,</p>
+                <p>Menjawab surat yang kami terima pada tanggal <%= formatDate(correspondence.incoming_letter_date) %> dengan nomor <%= correspondence.incoming_letter_number %> perihal <%= correspondence.incoming_letter_subject %>, bersama ini kami sampaikan bahwa Rumah Sakit
+                    Universitas Andalas memberikan izin kepada mahasiswa Fakultas <%= faculty %>
+                        <%= institution %> untuk melakukan penelitian di lingkungan Rumah Sakit Universitas Andalas
+                            dengan syarat melakukan Ethical Clearance di Rumah Sakit Universitas Andalas. Adapun data
+                            mahasiswa sebagai berikut:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:7%">No</th>
+                            <th style="width:25%">Nama Mahasiswa</th>
+                            <th style="width:18%">NIM</th>
+                            <th>Judul Penelitian</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>
+                                <%= researcherName %>
+                            </td>
+                            <td>
+                                <%= researcherId %>
+                            </td>
+                            <td>
+                                <%= researchTitle %>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Setelah melakukan penelitian, peneliti wajib memberikan laporan ke Bagian Diklit Rumah Sakit
+                    Universitas Andalas. Jika peneliti menggunakan alat Rumah Sakit Universitas Andalas, maka pembiayaan
+                    selama kegiatan penelitian ini akan dibebankan kepada peneliti yang bersangkutan dan akan mengikuti
+                    peraturan yang ada di Rumah Sakit Universitas Andalas.</p><br>
+                <p>Demikian surat ini disampaikan, atas perhatian dan kerja samanya diucapkan terima kasih.</p>
+                <div class="signature-row">
+                    <div></div>
+                    <div class="signature"><strong>Direktur Utama<br>Rumah Sakit Universitas Andalas</strong>
+                        <div class="signature-space"></div>
+                        <div class="signature-name">MUHAMMAD RIENDRA</div>
+                        <div>NIP: 197604082005011007</div>
+                    </div>
+                </div>
+</body>
+
+</html>

@@ -1,0 +1,1021 @@
+{
+  "info": {
+    "name": "KEPK — Sistem Izin Pengambilan Data Penelitian",
+    "_postman_id": "kepk-backend-api-collection",
+    "description": "Koleksi endpoint API lengkap untuk sistem KEPK (Komisi Etik Penelitian Kesehatan).\n\n## Cara Penggunaan\n1. Import koleksi ini ke Postman\n2. Import `KEPK.postman_environment.json` sebagai environment\n3. Set `base_url = http://localhost:5000`\n4. Register → Login → salin token ke variabel `researcher_token` (atau sesuai role)\n5. Ikuti urutan workflow pengajuan\n\n## Alur Workflow\nDRAFT → SUBMITTED → ADMIN_REVIEW → ADMIN_APPROVED → (SEKRETARIS_REVIEW) → WAITING_REVIEWER → UNDER_REVIEW → REVIEW_COMPLETED → APPROVED → PERMIT_ISSUED",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Authentication",
+      "description": "Endpoint untuk registrasi, login, logout, refresh token, dan profil pengguna.",
+      "item": [
+        {
+          "name": "Register (PENELITI)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Peneliti Baru\",\n  \"email\": \"peneliti@example.com\",\n  \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Mendaftarkan akun baru dengan role PENELITI.\n\n**Body:**\n- `name` (string, required)\n- `email` (string, valid email, required)\n- `password` (string, min 8 karakter, required)\n\n**Response 201:** Akun berhasil dibuat\n**Response 409:** Email sudah terdaftar\n**Response 422:** Validasi gagal"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.environment.set('researcher_token', data.access_token);",
+                  "    pm.environment.set('refresh_token', data.refresh_token);",
+                  "    console.log('Token saved to researcher_token');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"peneliti@example.com\",\n  \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Login dan mendapatkan JWT access token + refresh token.\n\n**Response 200:** `{ access_token, refresh_token, user }`\n**Response 401:** Kredensial salah"
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Diklat",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.environment.set('diklat_token', data.access_token);",
+                  "    console.log('Diklat token saved');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"diklat@kepk.ac.id\",\n  \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Login sebagai Diklat. Token disimpan ke `diklat_token`."
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Sekretaris KEPK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.environment.set('sekretaris_token', data.access_token);",
+                  "    console.log('Sekretaris token saved');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sekretaris@kepk.ac.id\",\n  \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Login sebagai Sekretaris KEPK. Token disimpan ke `sekretaris_token`."
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Chief KEPK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.environment.set('chief_token', data.access_token);",
+                  "    console.log('Chief token saved');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ketua@kepk.ac.id\",\n  \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Login sebagai Ketua Reviewer (KETUA). Token disimpan ke `chief_token`."
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Reviewer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.environment.set('reviewer_token', data.access_token);",
+                  "    console.log('Reviewer token saved');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"reviewer@kepk.ac.id\",\n  \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Login sebagai Reviewer. Token disimpan ke `reviewer_token`."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User (me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/auth/me", "host": ["{{base_url}}"], "path": ["api", "auth", "me"] },
+            "description": "Mendapatkan profil pengguna yang sedang login.\n\n**Auth:** Bearer token (role apa pun)\n**Response 200:** Data profil user beserta roles"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.environment.set('researcher_token', data.access_token);",
+                  "    console.log('Access token refreshed');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/auth/refresh", "host": ["{{base_url}}"], "path": ["api", "auth", "refresh"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Menukar refresh token dengan access token baru.\n\n**Response 200:** `{ access_token }`\n**Response 401:** Refresh token tidak valid atau sudah kadaluarsa"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/auth/logout", "host": ["{{base_url}}"], "path": ["api", "auth", "logout"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Logout dan mencabut refresh token.\n\n**Response 200:** Logout berhasil"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Applications",
+      "description": "Endpoint untuk mengelola pengajuan izin penelitian (CRUD, submit, revise).",
+      "item": [
+        {
+          "name": "List Applications",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications", "host": ["{{base_url}}"], "path": ["api", "applications"] },
+            "description": "Mendapatkan daftar pengajuan sesuai role:\n- PENELITI: hanya milik sendiri\n- DIKLIT: semua pengajuan yang sudah disubmit\n- SEKRETARIAT, KETUA, SUPERADMIN: semua pengajuan\n\n**Auth:** Bearer token (semua role)\n**Response 200:** Array data pengajuan"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Draft Application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.environment.set('application_id', data.id);",
+                  "    console.log('Application ID saved:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications", "host": ["{{base_url}}"], "path": ["api", "applications"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"group_category\": \"MAHASISWA\",\n  \"research_title\": \"Studi Kasus Penggunaan Antibiotik di Rumah Sakit X\",\n  \"research_background\": \"Resistensi antibiotik semakin meningkat dan perlu dikaji lebih dalam.\",\n  \"research_objectives\": \"Mengidentifikasi pola penggunaan antibiotik dan faktor yang mempengaruhi resistensi.\",\n  \"research_methodology\": \"Penelitian deskriptif kuantitatif dengan teknik sampling purposif.\",\n  \"research_location\": \"Rumah Sakit X, Kota Y\",\n  \"research_institution\": \"Universitas Z\",\n  \"research_duration\": \"3 bulan\",\n  \"data_needed\": \"Rekam medis pasien, data pemberian antibiotik\",\n  \"purpose\": \"Pengambilan data awal untuk skripsi\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Membuat pengajuan baru dengan status DRAFT.\n\n**Auth:** Bearer token (PENELITI)\n**Body Fields:**\n- `group_category` (required): MAHASISWA | DOSEN | NAKES | DOKTER | MANDIRI\n- `research_title` (required): Judul penelitian\n- `research_background`, `research_objectives`, `research_methodology`: Isi penelitian\n- `research_location`, `research_institution`, `research_duration`: Lokasi dan durasi\n- `data_needed`, `purpose`: Data yang dibutuhkan\n\n**Response 201:** Data pengajuan baru dengan status DRAFT\n**Response 422:** Validasi gagal"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Application by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}"] },
+            "description": "Mendapatkan detail pengajuan berdasarkan ID.\n\n**Auth:** Bearer token (semua role)\n**Response 200:** Detail pengajuan\n**Response 404:** Pengajuan tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Draft Application",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"research_title\": \"Studi Kasus Penggunaan Antibiotik (Revisi Judul)\",\n  \"research_background\": \"Resistensi antibiotik merupakan masalah global yang membutuhkan solusi komprehensif.\",\n  \"research_objectives\": \"Mengidentifikasi dan menganalisis pola penggunaan antibiotik secara komprehensif.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Memperbarui data pengajuan. Hanya bisa dilakukan saat status DRAFT.\n\n**Auth:** Bearer token (PENELITI, owner saja)\n**Response 200:** Data pengajuan yang sudah diperbarui\n**Response 400:** Pengajuan bukan DRAFT\n**Response 403:** Bukan pemilik pengajuan"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/submit", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "submit"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Mengirimkan pengajuan (DRAFT → SUBMITTED).\n\nPrasyarat:\n- Status harus DRAFT\n- Minimal 1 dokumen sudah diupload\n- Field wajib harus terisi\n\n**Auth:** Bearer token (PENELITI, owner saja)\n**Response 200:** Pengajuan berhasil dikirim\n**Response 422:** Field tidak lengkap atau dokumen belum diupload\n**Response 400:** Transisi status tidak valid"
+          },
+          "response": []
+        },
+        {
+          "name": "Revise Application (Resubmit)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/revise", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "revise"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"research_title\": \"Judul yang sudah direvisi sesuai catatan\",\n  \"research_background\": \"Latar belakang yang sudah diperbaiki\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Mengirimkan ulang pengajuan setelah revisi (REVISION_REQUIRED → SUBMITTED).\n\nHanya bisa dilakukan saat status REVISION_REQUIRED.\n\n**Auth:** Bearer token (PENELITI, owner saja)\n**Response 200:** Pengajuan berhasil dikirim ulang\n**Response 400:** Status bukan REVISION_REQUIRED"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Draft Application",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}"] },
+            "description": "Menghapus pengajuan. Hanya bisa dilakukan saat status DRAFT.\n\n**Auth:** Bearer token (PENELITI, owner saja)\n**Response 200:** Pengajuan berhasil dihapus\n**Response 400:** Pengajuan bukan DRAFT"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Documents",
+      "description": "Endpoint untuk upload, list, download, dan hapus dokumen persyaratan.",
+      "item": [
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/documents", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "documents"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "File dokumen (PDF/JPEG/PNG, max 10MB)"
+                },
+                {
+                  "key": "document_type",
+                  "value": "SURAT_PENGANTAR",
+                  "type": "text",
+                  "description": "Jenis dokumen (e.g., SURAT_PENGANTAR, PROPOSAL, INFORMED_CONSENT)"
+                }
+              ]
+            },
+            "description": "Upload dokumen persyaratan untuk pengajuan.\n\n**Auth:** Bearer token (PENELITI, owner saja)\n**Content-Type:** multipart/form-data\n**Field:** `file` (file), `document_type` (string)\n**Tipe diizinkan:** PDF, JPEG, PNG\n**Ukuran maks:** 10 MB (configurable)\n\n**Response 201:** Metadata dokumen yang diupload\n**Response 400:** File tidak valid\n**Response 413:** File terlalu besar"
+          },
+          "response": []
+        },
+        {
+          "name": "List Documents for Application",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/documents", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "documents"] },
+            "description": "Mendapatkan daftar dokumen untuk suatu pengajuan.\n\n**Auth:** Bearer token (semua role)\n**Response 200:** Array metadata dokumen"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Document Metadata",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/documents/{{document_id}}", "host": ["{{base_url}}"], "path": ["api", "documents", "{{document_id}}"] },
+            "description": "Mendapatkan metadata dokumen berdasarkan ID.\n\n**Auth:** Bearer token (semua role)\n**Response 200:** Metadata dokumen\n**Response 404:** Dokumen tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Download Document",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/documents/{{document_id}}/download", "host": ["{{base_url}}"], "path": ["api", "documents", "{{document_id}}", "download"] },
+            "description": "Download file dokumen.\n\n**Auth:** Bearer token (semua role yang memiliki akses ke pengajuan)\n**Response:** File binary (Content-Disposition: attachment)\n**Response 404:** Dokumen tidak ditemukan\n**Response 403:** Tidak memiliki akses"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/documents/{{document_id}}", "host": ["{{base_url}}"], "path": ["api", "documents", "{{document_id}}"] },
+            "description": "Menghapus dokumen. Hanya saat pengajuan masih DRAFT.\n\n**Auth:** Bearer token (PENELITI, owner saja)\n**Response 200:** Dokumen berhasil dihapus\n**Response 400:** Pengajuan bukan DRAFT\n**Response 403:** Bukan pemilik"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Diklat Verification",
+      "description": "Endpoint untuk Diklat melakukan verifikasi administrasi pengajuan.",
+      "item": [
+        {
+          "name": "List Applications (Diklat Queue)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{diklat_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/admin/applications", "host": ["{{base_url}}"], "path": ["api", "admin", "applications"] },
+            "description": "Mendapatkan daftar pengajuan untuk diverifikasi.\n\n**Auth:** Bearer token (DIKLIT, SUPERADMIN)\n**Response 200:** Array pengajuan yang perlu diverifikasi"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Application Detail (Diklat)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{diklat_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/admin/applications/{{application_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "applications", "{{application_id}}"] },
+            "description": "Mendapatkan detail pengajuan untuk keperluan verifikasi.\n\n**Auth:** Bearer token (DIKLIT, SUPERADMIN)\n**Response 200:** Detail pengajuan\n**Response 404:** Tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Open Application for Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{diklat_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/admin/applications/{{application_id}}/open", "host": ["{{base_url}}"], "path": ["api", "admin", "applications", "{{application_id}}", "open"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Membuka pengajuan untuk diverifikasi (SUBMITTED → ADMIN_REVIEW).\n\n**Auth:** Bearer token (DIKLIT)\n**Response 200:** Status berubah ke ADMIN_REVIEW\n**Response 400:** Status bukan SUBMITTED"
+          },
+          "response": []
+        },
+        {
+          "name": "Request Revision (Diklat)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{diklat_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/admin/applications/{{application_id}}/revision", "host": ["{{base_url}}"], "path": ["api", "admin", "applications", "{{application_id}}", "revision"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Dokumen surat pengantar dari institusi belum dilampirkan. Harap lengkapi dan kirim ulang.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Meminta revisi dari ADMIN_REVIEW (ADMIN_REVIEW → REVISION_REQUIRED).\n\n**Auth:** Bearer token (DIKLIT)\n**Body:** `note` (string, required) — catatan untuk peneliti\n**Response 200:** Status berubah ke REVISION_REQUIRED\n**Response 400:** Status bukan ADMIN_REVIEW"
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Application (Diklat)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{diklat_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/admin/applications/{{application_id}}/reject", "host": ["{{base_url}}"], "path": ["api", "admin", "applications", "{{application_id}}", "reject"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Pengajuan ditolak karena tidak memenuhi kriteria penelitian yang diizinkan.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Menolak pengajuan dari ADMIN_REVIEW (ADMIN_REVIEW → REJECTED).\n\n**Auth:** Bearer token (DIKLIT)\n**Body:** `note` (string, required) — alasan penolakan\n**Response 200:** Status berubah ke REJECTED"
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Without Ethics Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{diklat_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/admin/applications/{{application_id}}/approve-without-ethics", "host": ["{{base_url}}"], "path": ["api", "admin", "applications", "{{application_id}}", "approve-without-ethics"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Menyetujui administrasi tanpa kajian etik (ADMIN_REVIEW → ADMIN_APPROVED).\nSelanjutnya Diklat upload surat izin penelitian → PERMIT_ISSUED.\n\n**Auth:** Bearer token (DIKLIT)\n**Response 200:** Status berubah ke ADMIN_APPROVED"
+          },
+          "response": []
+        },
+        {
+          "name": "Approve With Ethics Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{diklat_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/admin/applications/{{application_id}}/approve-with-ethics", "host": ["{{base_url}}"], "path": ["api", "admin", "applications", "{{application_id}}", "approve-with-ethics"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Menyetujui administrasi dengan kajian etik (ADMIN_REVIEW → ADMIN_APPROVED).\nSelanjutnya diteruskan ke Sekretaris KEPK untuk kajian etik.\n\n**Auth:** Bearer token (DIKLIT)\n**Response 200:** Status berubah ke ADMIN_APPROVED"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Sekretaris KEPK",
+      "description": "Endpoint untuk Sekretaris KEPK meneruskan pengajuan ke proses kajian etik.",
+      "item": [
+        {
+          "name": "List Applications (Sekretaris)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{sekretaris_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/sekretaris/applications", "host": ["{{base_url}}"], "path": ["api", "sekretaris", "applications"] },
+            "description": "Mendapatkan daftar pengajuan yang perlu diproses oleh Sekretaris KEPK (status ADMIN_APPROVED).\n\n**Auth:** Bearer token (SEKRETARIAT, SUPERADMIN)\n**Response 200:** Array pengajuan"
+          },
+          "response": []
+        },
+        {
+          "name": "Forward to Ethics Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{sekretaris_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/sekretaris/applications/{{application_id}}/forward", "host": ["{{base_url}}"], "path": ["api", "sekretaris", "applications", "{{application_id}}", "forward"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Meneruskan pengajuan ke proses kajian etik (ADMIN_APPROVED → SEKRETARIS_REVIEW → WAITING_REVIEWER).\n\n**Auth:** Bearer token (SEKRETARIAT)\n**Response 200:** Status berubah ke WAITING_REVIEWER\n**Response 400:** Status bukan ADMIN_APPROVED"
+          },
+          "response": []
+        },
+        {
+          "name": "Request Revision (Sekretaris)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{sekretaris_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/sekretaris/applications/{{application_id}}/revision", "host": ["{{base_url}}"], "path": ["api", "sekretaris", "applications", "{{application_id}}", "revision"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Format proposal penelitian belum sesuai template KEPK. Harap perbaiki sesuai panduan.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Meminta revisi dari tahap SEKRETARIS_REVIEW (SEKRETARIS_REVIEW → REVISION_REQUIRED).\n\n**Auth:** Bearer token (SEKRETARIAT)\n**Body:** `note` (string, required)\n**Response 200:** Status berubah ke REVISION_REQUIRED"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Reviewer Assignments",
+      "description": "Endpoint untuk penugasan reviewer oleh Ketua Reviewer.",
+      "item": [
+        {
+          "name": "List Available Reviewers",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{chief_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/review-assignments/reviewers", "host": ["{{base_url}}"], "path": ["api", "review-assignments", "reviewers"] },
+            "description": "Mendapatkan daftar reviewer yang tersedia untuk ditugaskan.\n\n**Auth:** Bearer token (KETUA, SUPERADMIN)\n**Response 200:** Array reviewer"
+          },
+          "response": []
+        },
+        {
+          "name": "List Assignments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{chief_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/review-assignments", "host": ["{{base_url}}"], "path": ["api", "review-assignments"] },
+            "description": "Mendapatkan daftar penugasan reviewer.\n- REVIEWER: hanya penugasan miliknya\n- KETUA, SUPERADMIN: semua penugasan\n\n**Auth:** Bearer token (REVIEWER, KETUA, SUPERADMIN)\n**Response 200:** Array penugasan"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Reviewer to Application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.environment.set('assignment_id', data.id);",
+                  "    console.log('Assignment ID saved:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{chief_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/assign-reviewer", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "assign-reviewer"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reviewer_id\": \"<reviewer-user-uuid>\",\n  \"review_type\": \"EXPEDITED\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Menugaskan reviewer ke pengajuan (status harus WAITING_REVIEWER).\n\n**Auth:** Bearer token (KETUA)\n**Body:**\n- `reviewer_id` (UUID, required): ID user dengan role REVIEWER\n- `review_type` (required): EXEMPTED | EXPEDITED | FULL_BOARD\n\n**Response 201:** Data penugasan baru\n**Response 400:** Jenis review tidak valid atau status salah\n**Response 409:** Reviewer sudah ditugaskan ke pengajuan ini"
+          },
+          "response": []
+        },
+        {
+          "name": "Accept Assignment (Reviewer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/review-assignments/{{assignment_id}}/accept", "host": ["{{base_url}}"], "path": ["api", "review-assignments", "{{assignment_id}}", "accept"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Reviewer menerima penugasan (PENDING → ACCEPTED).\nJika kondisi terpenuhi, status pengajuan berubah ke UNDER_REVIEW.\n\n**Auth:** Bearer token (REVIEWER)\n**Response 200:** Penugasan diterima\n**Response 403:** Bukan penugasan miliknya"
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Assignment (Reviewer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/review-assignments/{{assignment_id}}/reject", "host": ["{{base_url}}"], "path": ["api", "review-assignments", "{{assignment_id}}", "reject"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Konflik kepentingan dengan peneliti terkait.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Reviewer menolak penugasan (PENDING → REJECTED).\nKetua Reviewer perlu menugaskan reviewer lain.\n\n**Auth:** Bearer token (REVIEWER)\n**Response 200:** Penugasan ditolak"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Reviews",
+      "description": "Endpoint untuk reviewer memberikan penilaian dan komentar terhadap pengajuan.",
+      "item": [
+        {
+          "name": "List Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/reviews", "host": ["{{base_url}}"], "path": ["api", "reviews"] },
+            "description": "Mendapatkan daftar review.\n- REVIEWER: hanya review miliknya\n- KETUA, DIKLIT, SEKRETARIAT: semua review\n\n**Auth:** Bearer token (REVIEWER, KETUA, DIKLIT, SEKRETARIAT, SUPERADMIN)\n**Response 200:** Array review"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Review by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/reviews/{{review_id}}", "host": ["{{base_url}}"], "path": ["api", "reviews", "{{review_id}}"] },
+            "description": "Mendapatkan detail review berdasarkan ID.\n\n**Auth:** Bearer token (REVIEWER, KETUA, DIKLIT, SEKRETARIAT, SUPERADMIN)\n**Response 200:** Detail review\n**Response 404:** Review tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Review",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.environment.set('review_id', data.id);",
+                  "    console.log('Review ID saved:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/reviews", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "reviews"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recommendation\": \"APPROVE\",\n  \"comment\": \"Penelitian sudah memenuhi kaidah etika penelitian. Tujuan dan metodologi sudah jelas. Direkomendasikan untuk disetujui.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Reviewer mengirimkan hasil review.\nJika semua kondisi terpenuhi, status pengajuan berubah ke REVIEW_COMPLETED.\n\n**Auth:** Bearer token (REVIEWER, harus memiliki penugasan ACCEPTED)\n**Body:**\n- `recommendation` (required): APPROVE | REVISION | REJECT\n- `comment` (string): Komentar review\n\n**Response 201:** Data review tersimpan\n**Response 400:** Tidak memiliki penugasan yang valid\n**Response 403:** Bukan reviewer yang ditugaskan"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/reviews/{{review_id}}", "host": ["{{base_url}}"], "path": ["api", "reviews", "{{review_id}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recommendation\": \"REVISION\",\n  \"comment\": \"Perlu klarifikasi pada bagian metodologi pengambilan sampel sebelum disetujui.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Memperbarui review (sebelum REVIEW_COMPLETED).\n\n**Auth:** Bearer token (REVIEWER, owner review saja)\n**Response 200:** Review diperbarui\n**Response 400:** Review sudah tidak bisa diubah"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Review Comments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/reviews/{{review_id}}/comments", "host": ["{{base_url}}"], "path": ["api", "reviews", "{{review_id}}", "comments"] },
+            "description": "Mendapatkan komentar untuk review tertentu.\n\n**Auth:** Bearer token (REVIEWER, KETUA, DIKLIT, SEKRETARIAT, SUPERADMIN)\n**Response 200:** Array komentar"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Comment to Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{reviewer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/reviews/{{review_id}}/comments", "host": ["{{base_url}}"], "path": ["api", "reviews", "{{review_id}}", "comments"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comment\": \"Perhatikan informed consent yang harus ditandatangani oleh semua subjek penelitian.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Menambahkan komentar ke review.\n\n**Auth:** Bearer token (REVIEWER, harus owner review)\n**Body:** `comment` (string, required)\n**Response 201:** Komentar tersimpan"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. Final Decision (Chief KEPK)",
+      "description": "Endpoint untuk Ketua Reviewer memberikan keputusan akhir.",
+      "item": [
+        {
+          "name": "Approve Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{chief_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/decision/approve", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "decision", "approve"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comments\": \"Penelitian telah memenuhi seluruh persyaratan etika penelitian. Disetujui untuk dilanjutkan.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Menyetujui pengajuan (REVIEW_COMPLETED → APPROVED, atau WAITING_REVIEWER → APPROVED untuk EXEMPTED).\n\n**Auth:** Bearer token (KETUA)\n**Body:** `comments` (string, opsional)\n**Response 200:** Pengajuan disetujui\n**Response 400:** Status tidak valid untuk keputusan"
+          },
+          "response": []
+        },
+        {
+          "name": "Request Revision (Chief KEPK)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{chief_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/decision/revision", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "decision", "revision"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comments\": \"Perlu perbaikan pada bagian perlindungan privasi subjek penelitian dan proses informed consent.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Meminta revisi dari REVIEW_COMPLETED (REVIEW_COMPLETED → REVISION_REQUIRED).\n\n**Auth:** Bearer token (KETUA)\n**Body:** `comments` (string, required)\n**Response 200:** Status berubah ke REVISION_REQUIRED"
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Application (Chief KEPK)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{chief_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/decision/reject", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "decision", "reject"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comments\": \"Penelitian tidak memenuhi standar etika penelitian yang berlaku. Pengajuan ditolak.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Menolak pengajuan (REVIEW_COMPLETED → REJECTED, atau WAITING_REVIEWER → REJECTED untuk EXEMPTED).\n\n**Auth:** Bearer token (KETUA)\n**Body:** `comments` (string, required)\n**Response 200:** Pengajuan ditolak"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "9. Letters (Surat Izin)",
+      "description": "Endpoint untuk penerbitan, pengambilan metadata, dan download surat izin.",
+      "item": [
+        {
+          "name": "Get Letter Metadata",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/letter", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "letter"] },
+            "description": "Mendapatkan metadata surat izin untuk suatu pengajuan.\n\n**Auth:** Bearer token (PENELITI owner, DIKLIT, SEKRETARIAT, KETUA, SUPERADMIN)\n**Response 200:** Metadata surat (nomor, jenis, tanggal terbit)\n**Response 404:** Surat belum diterbitkan"
+          },
+          "response": []
+        },
+        {
+          "name": "Issue Letter (Upload Signed Letter)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.environment.set('letter_id', data.id);",
+                  "    console.log('Letter ID saved:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{diklat_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/letter", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "letter"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "File surat izin yang sudah ditandatangani (PDF)"
+                },
+                {
+                  "key": "letter_type",
+                  "value": "IZIN_PENELITIAN",
+                  "type": "text",
+                  "description": "Jenis surat: IZIN_PENELITIAN | IZIN_ETIK | BEBAS_KAJI_ETIK"
+                }
+              ]
+            },
+            "description": "Menerbitkan surat izin dengan upload file yang sudah ditandatangani.\nStatus pengajuan berubah ke PERMIT_ISSUED.\n\n**Auth:** Bearer token (DIKLIT)\n**Content-Type:** multipart/form-data\n**Prasyarat:** Status ADMIN_APPROVED (tanpa etik) atau APPROVED (dengan etik)\n\n**Letter Types:**\n- `IZIN_PENELITIAN`: jalur tanpa kajian etik\n- `IZIN_ETIK`: jalur dengan kajian etik, sudah disetujui\n- `BEBAS_KAJI_ETIK`: jalur EXEMPTED (bebas kajian etik)\n\n**Response 201:** Surat berhasil diterbitkan, status → PERMIT_ISSUED\n**Response 409:** Surat sudah pernah diterbitkan untuk pengajuan ini"
+          },
+          "response": []
+        },
+        {
+          "name": "Download Letter",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/letters/{{letter_id}}/download", "host": ["{{base_url}}"], "path": ["api", "letters", "{{letter_id}}", "download"] },
+            "description": "Download file surat izin.\n\n**Auth:** Bearer token (PENELITI owner, DIKLIT, SEKRETARIAT, KETUA, SUPERADMIN)\n**Response:** File binary PDF\n**Response 404:** Surat tidak ditemukan\n**Response 403:** Tidak memiliki akses"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10. Application History",
+      "description": "Endpoint untuk melihat riwayat perubahan status dan revisi pengajuan.",
+      "item": [
+        {
+          "name": "Get Application History",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/history", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "history"] },
+            "description": "Mendapatkan riwayat lengkap perubahan status pengajuan.\nSetiap perubahan status tercatat dengan siapa yang mengubah, kapan, dan catatan.\n\n**Auth:** Bearer token (semua role dengan akses ke pengajuan)\n**Response 200:** Array riwayat status"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Application Revisions",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{researcher_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/applications/{{application_id}}/revisions", "host": ["{{base_url}}"], "path": ["api", "applications", "{{application_id}}", "revisions"] },
+            "description": "Mendapatkan daftar permintaan revisi untuk pengajuan beserta catatan dari verifikator.\n\n**Auth:** Bearer token (semua role dengan akses ke pengajuan)\n**Response 200:** Array permintaan revisi dengan nomor revisi, catatan, dan status"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    }
+  ]
+}
